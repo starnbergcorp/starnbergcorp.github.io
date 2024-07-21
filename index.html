@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeGenius</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+            display: none;
+        }
+        .output pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ResumeGenius</h1>
+        <form id="resumeForm">
+            <label for="jobPosting">Job Posting URL:</label>
+            <input type="url" id="jobPosting" name="jobPosting" required>
+
+            <label for="cv">Current CV:</label>
+            <textarea id="cv" name="cv" rows="10" required></textarea>
+
+            <button type="submit">Generate Resume and Cover Letter</button>
+        </form>
+        <div class="output" id="output">
+            <h2>Generated Resume:</h2>
+            <pre id="generatedResume"></pre>
+            <h2>Generated Cover Letter:</h2>
+            <pre id="generatedCoverLetter"></pre>
+        </div>
+    </div>
+    <script>
+        document.getElementById('resumeForm').onsubmit = async function (event) {
+            event.preventDefault();
+
+            const jobPosting = document.getElementById('jobPosting').value;
+            const cv = document.getElementById('cv').value;
+
+            const response = await fetch('http://localhost:3000/generate-resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ jobPosting, cv })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('generatedResume').innerText = data.resume;
+                document.getElementById('generatedCoverLetter').innerText = data.coverLetter;
+                document.getElementById('output').style.display = 'block';
+            } else {
+                alert('Error generating resume and cover letter. Please try again.');
+            }
+        };
+    </script>
+</body>
+</html>
